@@ -31,7 +31,7 @@ pub fn generate_key() -> (Vec<u8>, Vec<u8>) {
             Ok(n) => n,
             Err(e) => panic!("Error getting PKey from 'peer.pem': {}", e),
         },
-        Err(e) => panic!("Error reading file 'peer.pem': {}", e),
+        Err(e) => panic!("Error reading file '/private/wyrtap_public.pem': {}", e),
     };
 
     deriver
