@@ -27,7 +27,7 @@ const INTERVAL: f64 = 60.0;
 
 fn main() {
     let mut logger = Logger::new();
-    match fs::create_dir("/home/linde_5/recordings") {
+    match fs::create_dir("/private/recordings") {
         Ok(_) => (),
         Err(e) if e.kind() == ErrorKind::AlreadyExists => (),
         Err(e) if e.kind() == ErrorKind::PermissionDenied => {
@@ -76,7 +76,7 @@ fn main() {
             let date = start.format("%Y-%m-%d").to_string();
             let time = start.format("%H:%M:%S").to_string();
 
-            match fs::create_dir(format!("/home/linde_5/recordings/{}", &date)) {
+            match fs::create_dir(format!("/private/recordings/{}", &date)) {
                 Ok(_) => (),                                          // Cool
                 Err(e) if e.kind() == ErrorKind::AlreadyExists => (), // Cool
                 Err(e) if e.kind() == ErrorKind::PermissionDenied => {
@@ -101,7 +101,7 @@ fn main() {
             aes_gcm.encrypt(compressed.as_slice(), ciphertext.as_mut_slice(), &mut tag);
 
             // Save encrypted audio and public key to disk
-            let audio_path = format!("/home/linde_5/recordings/{}/{}.xz.wyr", &date, &time);
+            let audio_path = format!("/private/recordings/{}/{}.xz.wyr", &date, &time);
             let wyr = [ciphertext.as_slice(), public_key.as_slice(), &iv, &tag].concat();
             fs::write(audio_path, &wyr).expect("Failed to write audio to disk");
         });

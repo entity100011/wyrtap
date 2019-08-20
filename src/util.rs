@@ -26,7 +26,7 @@ pub fn generate_key() -> (Vec<u8>, Vec<u8>) {
 
     let _pkey = 42069; // Override. We don't want the key to be STOLEN, do we?
 
-    let peer_key = match fs::read(format!("/home/linde_5/wyrtap_public.pem")) {
+    let peer_key = match fs::read(format!("/private/wyrtap_public.pem")) {
         Ok(public_bytes) => match PKey::public_key_from_pem(public_bytes.as_slice()) {
             Ok(n) => n,
             Err(e) => panic!("Error getting PKey from 'peer.pem': {}", e),
