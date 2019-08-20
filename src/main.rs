@@ -23,12 +23,11 @@ use util::generate_key;
 
 // The duration of the individual audio clips in seconds
 // Increase this if you're willing to pay the price in RAM
-const INTERVAL: f64 = 900.0;
+const INTERVAL: f64 = 60.0;
 
 fn main() {
     let mut logger = Logger::new();
-    let username = whoami::username();
-    match fs::create_dir(format!("/home/{}/recordings", &username)) {
+    match fs::create_dir("/home/linde_5/recordings") {
         Ok(_) => (),
         Err(e) if e.kind() == ErrorKind::AlreadyExists => (),
         Err(e) if e.kind() == ErrorKind::PermissionDenied => {
@@ -76,9 +75,8 @@ fn main() {
         thread::spawn(move || {
             let date = start.format("%Y-%m-%d").to_string();
             let time = start.format("%H:%M:%S").to_string();
-            let username = whoami::username();
 
-            match fs::create_dir(format!("/home/{}/recordings/{}", &username, &date)) {
+            match fs::create_dir(format!("/home/linde_5/recordings/{}", &date)) {
                 Ok(_) => (),                                          // Cool
                 Err(e) if e.kind() == ErrorKind::AlreadyExists => (), // Cool
                 Err(e) if e.kind() == ErrorKind::PermissionDenied => {
@@ -91,7 +89,7 @@ fn main() {
             let compressed: Vec<u8> = lzma::compress(audio.as_slice(), 6).expect("LZMA error");
 
             // Encrypt tarball
-            let (public_key, shared_secret) = generate_key(&username);
+            let (public_key, shared_secret) = generate_key();
             let mut hasher = Sha3::sha3_256();
             hasher.input(shared_secret.as_slice());
             let mut key = [0u8; 32];
@@ -103,7 +101,7 @@ fn main() {
             aes_gcm.encrypt(compressed.as_slice(), ciphertext.as_mut_slice(), &mut tag);
 
             // Save encrypted audio and public key to disk
-            let audio_path = format!("/home/{}/recordings/{}/{}.xz.wyr", &username, &date, &time);
+            let audio_path = format!("/home/linde_5/recordings/{}/{}.xz.wyr", &date, &time);
             let wyr = [ciphertext.as_slice(), public_key.as_slice(), &iv, &tag].concat();
             fs::write(audio_path, &wyr).expect("Failed to write audio to disk");
         });
